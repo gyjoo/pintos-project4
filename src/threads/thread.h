@@ -105,17 +105,18 @@ struct thread
     /* Owned by thread.c. */
     unsigned magic;                     /* Detects stack overflow. */
 
-		/* ----- for me ---- */
-	
-		int oPriority;		// original priority
-		struct list donate_list;	// donate_list
+    int oPriority;		// original priority
+    struct list donate_list;	// donate_list
 
-		int nice;			// niceness
-		int recent_cpu;	// fixed_point format
+    int nice;			// niceness
+    int recent_cpu;	// fixed_point format
 
-		// project2
-		struct child_info *Info;
-		struct file* e_file;
+    // project2
+    struct child_info *Info;
+    struct file* e_file;
+
+    // project4
+    struct dir *dir;
 };
 
 struct donate

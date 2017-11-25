@@ -221,7 +221,7 @@ void syscall_create(struct intr_frame *f,int argsNum){
 		return;
 	}
 	lock_acquire(&FILELOCK);
-	bool result = filesys_create(file,initial_size);
+	bool result = filesys_create(file, initial_size, false); // isdir = false
 	lock_release(&FILELOCK);
 	f->eax = (int)result;
 }
@@ -422,13 +422,18 @@ void syscall_close(struct intr_frame *f,int argsNum){
 
 void syscall_mkdir(struct intr_frame *f){
 	void* esp = f->esp;
-
-	bool result = false;
+	bool result;
 
 	const char* dir = *(char **)(esp+4);
 
-	f->eax = (int)result;
+	lock_acquire(&FILELOCK);
+	if(dir != NULL)
+	{
+		result = filesys_create(dir, 0, true); // isdir = true
+	}
+	lock_release(&FILELOCK);
 
+	f->eax = (int)result;
 
 }
 
