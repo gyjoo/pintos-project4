@@ -1,0 +1,3 @@
+Prototype mismatch: sub main::SIGVTALRM () vs none at /home/os/pintos/src/utils/pintos line 935.
+Constant subroutine SIGVTALRM redefined at /home/os/pintos/src/utils/pintos line 927.
+Cannot find kernel

@@ -33,6 +33,16 @@ void syscall_tell(struct intr_frame *f,int argsNum);
 
 void syscall_close(struct intr_frame *f,int argsNum);
 
+void syscall_mkdir(struct intr_frame *f);
+
+void syscall_chdir(struct intr_frame *f);
+
+void syscall_readdir(struct intr_frame *f);
+
+void syscall_isdir(struct intr_frame *f);
+
+void syscall_inumber(struct intr_frame *f);
+
 int currentFd(struct thread *cur);
 
 struct file* getFile(int fd,struct thread *cur);
