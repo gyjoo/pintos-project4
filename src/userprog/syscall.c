@@ -221,7 +221,7 @@ void syscall_create(struct intr_frame *f,int argsNum){
 		return;
 	}
 	lock_acquire(&FILELOCK);
-	bool result = filesys_create(file, initial_size, false); // isdir = false
+ 	bool result = filesys_create(file, initial_size, false); // isdir = false
 	lock_release(&FILELOCK);
 	f->eax = (int)result;
 }
@@ -437,7 +437,21 @@ void syscall_mkdir(struct intr_frame *f){
 
 }
 
+// Must be modified!!!!!!!!!!!!!!!
 void syscall_chdir(struct intr_frame *f){
+	void* esp = f->esp;
+	bool result;
+
+	const char* dir = *(char **)(esp+4);
+	
+	lock_acquire(&FILELOCK);
+	if(dir != NULL)
+	{
+		result = filesys_chdir(dir); // isdir = true
+	}
+	lock_release(&FILELOCK);
+
+	f->eax = (int)result;
 }
 
 void syscall_readdir(struct intr_frame *f){

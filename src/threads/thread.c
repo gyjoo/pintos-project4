@@ -100,6 +100,7 @@ static tid_t allocate_tid (void);
 void
 thread_init (void) 
 {
+
 	//int i;
   ASSERT (intr_get_level () == INTR_OFF);
 
@@ -132,6 +133,7 @@ thread_init (void)
 void
 thread_start (void) 
 {
+
   /* Create the idle thread. */
   struct semaphore idle_started;
   sema_init (&idle_started, 0);
@@ -238,6 +240,7 @@ tid_t
 thread_create (const char *name, int priority,
                thread_func *function, void *aux) 
 {
+
   struct thread *t;
   struct kernel_thread_frame *kf;
   struct switch_entry_frame *ef;
@@ -284,6 +287,7 @@ thread_create (const char *name, int priority,
 		t->recent_cpu = thread_current()->recent_cpu;
 		t->nice = thread_current()->nice;
 	}
+
 
   /* Add current working directory */
   if (thread_current() -> current_dir)

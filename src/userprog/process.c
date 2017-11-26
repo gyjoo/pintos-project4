@@ -85,6 +85,7 @@ parseArgs(char* file_name)
 tid_t
 process_execute (const char *file_name) 
 {
+
   char *fn_copy;
   tid_t tid;
 
@@ -237,6 +238,7 @@ static bool checkChild(tid_t tid)
 int
 process_wait (tid_t child_tid) 
 {
+	
 	struct child_info *ci = getCIFromTid(child_tid);
 
 	if(!checkChild(child_tid))
