@@ -143,8 +143,11 @@ start_process (void *file_name_)
   if_.gs = if_.fs = if_.es = if_.ds = if_.ss = SEL_UDSEG;
   if_.cs = SEL_UCSEG;
   if_.eflags = FLAG_IF | FLAG_MBS;
-	success = load (file_name, &if_.eip, &if_.esp);
+  success = load (file_name, &if_.eip, &if_.esp);
   
+  if (!thread_current()->current_dir)
+    thread_current()->current_dir = dir_open_root();
+
 	/* If load failed, quit. */
   if (!success){
 	 	palloc_free_page (file_name);
@@ -299,6 +302,8 @@ process_exit (void)
 	sema_up(&ci->w_sema);
 
 	remove_ci(cur);
+  if (thread_current()->current_dir)
+    dir_close(thread_current()->current_dir);
 }
 
 /* Sets up the CPU for running user code in the current

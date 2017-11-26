@@ -115,6 +115,7 @@ thread_init (void)
   init_thread (initial_thread, "main", PRI_DEFAULT);
   initial_thread->status = THREAD_RUNNING;
   initial_thread->tid = allocate_tid ();
+  initial_thread->current_dir = NULL;
 
 	if(thread_mlfqs){
 		initial_thread->nice = 0;
@@ -283,6 +284,13 @@ thread_create (const char *name, int priority,
 		t->recent_cpu = thread_current()->recent_cpu;
 		t->nice = thread_current()->nice;
 	}
+
+  /* Add current working directory */
+  if (thread_current() -> current_dir)
+    t->current_dir = dir_reopen(thread_current() -> current_dir);
+  else
+    t->current_dir = NULL;
+
   /* Add to run queue. */
 
 	thread_unblock (t);

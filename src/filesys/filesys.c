@@ -6,6 +6,8 @@
 #include "filesys/free-map.h"
 #include "filesys/inode.h"
 #include "filesys/directory.h"
+#include "threads/thread.h"
+#include "threads/malloc.h"
 
 /* Partition that contains the file system. */
 struct block *fs_device;
@@ -47,15 +49,21 @@ filesys_create (const char *name, off_t initial_size, bool is_dir)
 {
   block_sector_t inode_sector = 0;
   struct dir *dir = get_dir(name);
-  char* file_name = get_filename(name);
-//  struct dir *dir = dir_open_root ();
+  char* filename = get_filename(name);
+  
   bool success = (dir != NULL
                   && free_map_allocate (1, &inode_sector)
                   && inode_create (inode_sector, initial_size, is_dir)
                   && dir_add (dir, name, inode_sector));
+
+  if (strcmp(filename, ".") == 0 || strcmp(filename, "..") == 0)
+    success = false;
+
   if (!success && inode_sector != 0) 
     free_map_release (inode_sector, 1);
+
   dir_close (dir);
+  free(filename);
 
   return success;
 }
@@ -113,10 +121,10 @@ get_dir (const char* path)
   char copied_path[length + 1];
   memcpy(copied_path, path, length + 1);
 
-  if (copied_path[0] == "/" || !thread_current()->dir)
+  if (copied_path[0] == "/" || !thread_current()->current_dir)
     dir = dir_open_root();
   else 
-    dir = dir_reopen(thread_current()->dir);
+    dir = dir_reopen(thread_current()->current_dir);
 
   char *ptr, *next = NULL, *cur = strtok_r(copied_path, "/", &ptr);
   if (cur)
@@ -125,9 +133,28 @@ get_dir (const char* path)
   while (next != NULL)
   {
     struct inode* inode;
-    if (strcmp(cur, ".") == 0) 
+    if (strcmp(cur, ".") == 0) continue;
+    else if(strcmp(cur, "..") == 0)
+    {
+      inode = dir_parent_inode(dir);
+      if(inode == NULL) 
+        return NULL;
+    }
+    else if(dir_lookup(dir, next, &inode) == false)
+      return NULL;
+
+    if(inode_is_dir(inode))
+    {
+      dir_close(dir);
+      dir = dir_open(inode);
+    }
+    else
+    {
+      inode_close(inode);
+    }
+
     cur = next;
-    next = strtok(NULL, "/", &ptr);
+    next = strtok_r(NULL, "/", &ptr);
   }
 
   return dir;
@@ -135,7 +162,21 @@ get_dir (const char* path)
 
 /* Get filename from the given string */
 char* 
-get_fliename (const char* path)
+get_filename (const char* path)
 {
+  char copied_path[strlen(path) + 1];
+  memcpy(copied_path, path, strlen(path) + 1);
 
+  char *ptr, *next, *cur = "";
+  next = strtok_r(copied_path, "/", &ptr);
+  
+  while (next != NULL)
+  {
+    cur = next;
+  }
+  
+  char *filename = malloc(strlen(cur) + 1);
+  
+  memcpy(filename, cur, strlen(cur) + 1);
+  return filename;
 }

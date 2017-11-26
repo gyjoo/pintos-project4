@@ -116,7 +116,7 @@ struct thread
     struct file* e_file;
 
     // project4
-    struct dir *dir;
+    struct dir *current_dir;
 };
 
 struct donate
